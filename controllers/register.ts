@@ -20,7 +20,7 @@ export async function createUser(object: any, ctx: any) {
             const isUserExist = await userExist(object.email, ctx);
         if (isUserExist)
         { 
-            ctx.status = 409; 
+            ctx.status = 409; //  HTTP Status Code for inserting duplicate values
             return { success: false, values: "Registration cannot be completed as the user already exists." };
         }else{ 
             const result = await addDbUser(object, ctx); 
@@ -35,26 +35,25 @@ export async function createUser(object: any, ctx: any) {
 
 async function addDbUser(object: any, ctx: any): Promise<any> {
     try {
-        const rolesId = await findRole('users');
-
+        const rolesId = await findRole("users");
         if (rolesId instanceof Roles) {
             const hashedPassword = bcrypt.hashSync(object.password, 10);
             const userCreate = await User.create({id: uuidv4(), usernames: object.username, emails: object.email, rolesId: rolesId.dataValues.id, passwords: hashedPassword});
-            ctx.status = 201; // Created
+            ctx.status = 201; // HTTP Status Code for Created
             return { success: true, value: "User created successfully" };
         } else {
-            ctx.status = 500; // Internal Server Error
+            ctx.status = 500; // HTTP Status Code with Internal Server Error
             return { success: false, value: 'Failed to attach role. Please try again later.' };
         }
     } catch (err) {
-        ctx.status = 500; // Internal Server Error
-        return { success: false, value: err || "Internal Server Error" };
+        ctx.status = 500; // HTTP Status Code with Internal Server Error
+        return { success: false, value: err};
     }
 }
 
 async function findRole(name: string): Promise<any> {
     try {
-        const roleGuid = await Roles.findOne({ where: { names: name } });
+        const roleGuid = await Roles.findOne({ where: { names: `${name }` }});
         return roleGuid instanceof Roles ? roleGuid : null;
     } catch (err) {
         return { success: false, value: err || "Internal Server Error" };
