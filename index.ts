@@ -2,7 +2,6 @@ import Koa from 'koa';
 import  router  from './routes/route.ts';
 import { dbConnect } from './modules/db.ts';
 import * as redis from './modules/redis.ts';
-import { token } from './modules/token.ts';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,6 +16,6 @@ try{
 }catch(error){
     console.error("Server::Exception handler:::" , `${error}`);
 }
-
+ 
 server.use(router.routes());
 
