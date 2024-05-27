@@ -32,15 +32,16 @@ export const User = db.define('Users', {
     allowNull: false,
     defaultValue: false
   },
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
   rolesId: {
     type: DataTypes.STRING(36),
     allowNull: true,
     defaultValue: null
-  }
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue:new Date().toLocaleString()
+  },
   })
 
 
