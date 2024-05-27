@@ -25,7 +25,7 @@ redis.on('error', () => {
  * @param {*} key 
  * @param {*} object 
  */
-export async function RedisSetValue(key:string,object:any,timeout: number=3600) :Promise<void>
+export async function RedisSetValue(key:string,object:any,timeout: number=36600) :Promise<void>
 {
     try {
         await redis.set(key,object,{
@@ -60,11 +60,10 @@ export async function RedisExistKey(key:string) : Promise<any>
  */
 export async function RedisDelKey(key:string) : Promise<any>
 {
-    if(key)
-    {
-      return (await redis.del(key));
-    }else{
-        console.error(`[${new Date().toLocaleString()}] : Redis module::RedisDelKey function : Empty params `);
+    try{
+        return (await redis.del(key));
+    }catch(err){
+       return err
     }
 }
 
