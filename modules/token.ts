@@ -4,29 +4,34 @@ dotenv.config();
 
 const encrypt = async (user: any) => {
     const token = await jwt.sign({ data: user }, `${process.env.JWT_SECRET}`, {
-          audience: "Forum authorization",
-          issuer: "Forum Teams",
+          audience: `${process.env.JWT_AUDIENCE}`,
+          issuer:   `${process.env.JWT_ISSUER}`,
           expiresIn: '30d'});
     return token;
 }
 
-const decode = async (keyString:string , token: string) => {
+const decode = async (token: string) => {
     const decoded = await jwt.verify(token,`${process.env.JWT_SECRET}`);
     return decoded;
 }
 
-export async function token(operation:string , keyString:string, data:any) : Promise<any>
+export async function token(operation:string , data:any) : Promise<any>
 {
-    if (!process.env.JWT_SECRET) {
+    if (`${process.env.JWT_SECRET}` || `${process.env.JWT_AUDIENCE}` || `${process.env.JWT_ISSUER}`) 
+    {
         switch(operation)
         {
-            case "encrypt" : return await encrypt(data); break;
-            case "decrypt" : return typeof(data) == "string" ? await decrypt(keyString,data) : "Token module :: Token must be string "; break;
-            default: 
+           case "encrypt" : 
+              const token = await encrypt(data); 
+              return typeof(token) == "string" ? token : undefined; break;
+           case "decrypt" : 
+              return typeof(data)  == "string" ? await decode(data) : "Token module :: Token must be a string "; break;
+           default: 
               return "Token module :: Unknown operation"; 
-            break; 
-        }
+        } 
     }else{
-        throw new Error('Token module::JWT_SECRET environment variable is not set');
-    } 
+        throw new Error("Token Module::Global variable isn't set");
+    }
 }
+
+export default token;
