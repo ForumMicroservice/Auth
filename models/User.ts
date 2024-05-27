@@ -1,0 +1,49 @@
+import { DataTypes } from 'sequelize';
+import Roles from '../models/Roles.ts'
+import {db} from '../modules/db.ts';
+
+export const User = db.define('Users', {
+  id: {
+    type: DataTypes.STRING(36),
+    primaryKey: true,
+    allowNull: false
+  },
+  usernames: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true
+  },
+  emails: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true
+  },
+  passwords: {
+    type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  avatars: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    defaultValue: null
+  },
+  isBlockeds: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  rolesId: {
+    type: DataTypes.STRING(36),
+    allowNull: true,
+    defaultValue: null
+  }
+  })
+
+
+  User.belongsTo(Roles, { foreignKey: 'rolesId',targetKey:'id'});
+  Roles.hasMany(User,{foreignKey:'rolesId'});
+  export default User;
