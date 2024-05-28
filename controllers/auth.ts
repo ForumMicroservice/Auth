@@ -17,28 +17,29 @@ export async function authUser(object:any, ctx:any) : Promise<any>
         const authFormValidation = await validateAuth(object);
         if (authFormValidation == true) {
             if (await existUserIntoDb(object) == true) {
-                  if(await comparePass(object) == false){
+                if(await comparePass(object) == false){
                     ctx.status=400;
                     return({success:false, value:"Incorrect password"});       
             }else if(await checkingBlockedUserOrNo(object) == false){
-                ctx.status=200;
-                const user = await getUserInstance(object); 
-                const jwt = await token("encrypt",{id: user.dataValues.id, username:user.dataValues.usernames, avatar:user.dataValues.avatars, rolesId: user.dataValues.rolesId});
-                await redis.RedisSetValue("AuthKey"+jwt,{id: user.dataValues.id, username:user.dataValues.usernames, avatar:user.dataValues.avatars, rolesId: user.dataValues.rolesId})
-                return {success:true,value:{access_token: jwt}};
+                    ctx.status=200;
+                    const user = await getUserInstance(object); 
+                    const jwt = await token("encrypt",{id: user.dataValues.id, username:user.dataValues.usernames, avatar:user.dataValues.avatars, rolesId: user.dataValues.rolesId});
+                    await redis.RedisSetValue("AuthKey"+jwt,{id: user.dataValues.id, username:user.dataValues.usernames, avatar:user.dataValues.avatars, rolesId: user.dataValues.rolesId})
+                    return {success:true,value:{access_token: jwt}};
             }else{
-                return {success:false,value:"Sorry your login was banned by admin"}
+             ctx.status=403;   
+             return {success:false,value:"Sorry your login was banned by admin"}
             }
         }else{
             ctx.status=400;
             return {success:false,value:"User isn't exist"};
         }
     }else{
-      ctx.status=400;
-      return {success:false,value:authFormValidation}   
+            ctx.status=400;
+            return {success:false,value:authFormValidation}   
     }
     }catch(error){
-        return {success:false,value:error}
+            return {success:false,value:error}
     }
 }
 
