@@ -25,18 +25,18 @@ redis.on('error', () => {
  * @param {*} key 
  * @param {*} object 
  */
-export async function RedisSetValue(key:string,object:any,timeout: number=36600) :Promise<void>
-{
+export async function RedisSetValue(key: string, object: any): Promise<void> {
     try {
-        await redis.set(key,object,{
-            EX:timeout,
-            NX:true
+        await redis.set(key, JSON.stringify(object), {
+            EX: 36600,
+            NX: true
         });
     } catch (error) {
         console.error(`[${new Date().toLocaleString()}] : Redis module::RedisSetValue function + ${error}`);
         throw error;
-    } 
+    }
 }
+
 /**
  * An current function checking key 
  * Проверяет существует ключ или нет
